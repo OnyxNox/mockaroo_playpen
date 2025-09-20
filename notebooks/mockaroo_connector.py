@@ -4,7 +4,13 @@ import os
 import random
 import re
 import requests
-from utility import SchemaHealth, SchemaType, init_logger, sleep_with_jitter
+from utility import (
+    SchemaHealth,
+    SchemaType,
+    get_mockaroo_schema_name_metadata,
+    init_logger,
+    sleep_with_jitter,
+)
 
 
 class MockarooConnector:
@@ -45,24 +51,16 @@ class MockarooConnector:
 
     def download(self):
         try:
-            mockaroo_schema_name = dbutils.widgets.get("MOCKAROO_SCHEMA_NAME")
             catalog_name = dbutils.widgets.get("CATALOG_NAME")
+            databricks_schema_name = dbutils.widgets.get("DATABRICKS_SCHEMA_NAME")
+            mockaroo_schema_name = dbutils.widgets.get("MOCKAROO_SCHEMA_NAME")
             page_count = int(dbutils.widgets.get("PAGE_COUNT"))
             page_size = int(dbutils.widgets.get("PAGE_SIZE"))
             random_final_page_size = bool(dbutils.widgets.get("RANDOM_FINAL_PAGE_SIZE"))
-            databricks_schema_name = dbutils.widgets.get("DATABRICKS_SCHEMA_NAME")
             volume_name = dbutils.widgets.get("VOLUME_NAME")
 
-            # Extract metadata from Mockaroo schema name
-            match = re.match(r"\[([HU]):([GS])\]\s*(.+)", mockaroo_schema_name)
-            schema_health, schema_type, schema_name = match.groups()
-
-            # Map characters to their enum values
-            schema_health = (
-                SchemaHealth.HEALTHY if schema_health == "H" else SchemaHealth.UNHEALTHY
-            )
-            schema_type = (
-                SchemaType.GENERATED if schema_type == "G" else SchemaType.STATIC
+            (schema_health, schema_type, schema_name) = (
+                get_mockaroo_schema_name_metadata(mockaroo_schema_name)
             )
 
             schema_display_name = f"{schema_health.value} {schema_name}"
@@ -95,8 +93,8 @@ class MockarooConnector:
             self.logger.info(f"🗄️ Preparing the {raw_volume_path} volume...")
             spark.sql(f"CREATE VOLUME IF NOT EXISTS {raw_volume_path}")
 
-            output_dir = f"{schema_type.value.lower()}_{schema_health.value.lower()}_{schema_name.lower()}"
-            output_path = f"/Volumes/{catalog_name}/{databricks_schema_name}/{volume_name}/{output_dir}"
+            entity_name = f"{schema_type.value.lower()}_{schema_health.value.lower()}_{schema_name.lower()}"
+            output_path = f"/Volumes/{catalog_name}/{databricks_schema_name}/{volume_name}/{entity_name}"
 
             if schema_type == SchemaType.GENERATED:
                 record_count = self._extract_from_generated_data(
