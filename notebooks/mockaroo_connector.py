@@ -1,4 +1,4 @@
-from databricks.sdk.runtime import dbutils, spark
+from databricks.sdk.runtime import *
 import json
 import os
 import random

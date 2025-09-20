@@ -11,15 +11,7 @@
 		}
 	],
 	"settings": {
-		"editor.formatOnSave": true,
-		"editor.rulers": [
-			120
-		],
-		"files.exclude": {
-			"**/__pycache__/": true
-		},
 		"jupyter.interactiveWindow.cellMarker.codeRegex": "^# COMMAND ----------|^# Databricks notebook source|^(#\\s*%%|#\\s*\\<codecell\\>|#\\s*In\\[\\d*?\\]|#\\s*In\\[ \\])",
-		"jupyter.interactiveWindow.cellMarker.default": "# COMMAND ----------",
-		"python.useEnvironmentsExtension": true
+		"jupyter.interactiveWindow.cellMarker.default": "# COMMAND ----------"
 	}
 }
