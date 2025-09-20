@@ -8,6 +8,10 @@ This repository serves as a learning playground for exploring Databricks platfor
     1. Go to User Settings → Access Tokens
     1. Click "Generate New Token"
     1. Set expiration and copy the token
+1. Setup Python virtual environment
+    ```shell
+    python3.11 -m venv .env
+    ```
 1. Install and authenticate the Databricks CLI
     ```shell
     pip install databricks-cli

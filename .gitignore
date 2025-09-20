@@ -1,2 +1,11 @@
+# Miscellaneous ignore rule
+*.ignore*
+
 # Databricks VSCode extension configuration and cache directory
 .databricks/
+
+# Python virtual environment directory
+.env/
+
+# Python bytecode cache directory
+__pycache__/

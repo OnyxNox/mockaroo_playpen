@@ -1,16 +1,4 @@
 {
-	"extensions": {
-		"recommendations": [
-			"databricks.databricks",
-			"ms-python.black-formatter"
-		]
-	},
-	"folders": [
-		{
-			"path": ".."
-		}
-	],
-	"settings": {
 		"editor.formatOnSave": true,
 		"editor.rulers": [
 			120
@@ -22,4 +10,3 @@
 		"jupyter.interactiveWindow.cellMarker.default": "# COMMAND ----------",
 		"python.useEnvironmentsExtension": true
 	}
-}
