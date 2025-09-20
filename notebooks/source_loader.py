@@ -13,7 +13,7 @@ class SourceLoader:
         # Remove old widgets
         dbutils.widgets.removeAll()
 
-        dbutils.widgets.text("CATALOG_NAME", "mockaroo_playpen", "Catalog Name")
+        dbutils.widgets.text("CATALOG_NAME", "roo_bricks", "Catalog Name")
         dbutils.widgets.text(
             "DATABRICKS_SCHEMA_NAME", "mockaroo_data", "Databricks Schema Name"
         )

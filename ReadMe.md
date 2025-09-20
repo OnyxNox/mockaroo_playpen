@@ -1,6 +1,6 @@
-# 🦘 Mockaroo Playpen 🥅
+# 🦘 Roo Bricks 🧱
 
-This repository serves as a learning playground for exploring Databricks platform capabilities and features.
+This repository serves as a learning playground for exploring Databricks platform capabilities and features using Mockaroo as a data source.
 
 ## 🔨 Setup (Linux)
 

@@ -1,9 +1,9 @@
-# This is a Databricks asset bundle definition for mockaroo_playpen.
+# This is a Databricks asset bundle definition for roo_bricks.
 # The Databricks extension requires databricks.yml configuration file.
 # See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
 
 bundle:
-  name: mockaroo_playpen
+  name: roo_bricks
 
 include:
   - jobs/*.yml

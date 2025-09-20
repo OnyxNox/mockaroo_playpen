@@ -25,7 +25,7 @@ class MockarooConnector:
         # Remove old widgets
         dbutils.widgets.removeAll()
 
-        dbutils.widgets.text("CATALOG_NAME", "mockaroo_playpen", "Catalog Name")
+        dbutils.widgets.text("CATALOG_NAME", "roo_bricks", "Catalog Name")
         dbutils.widgets.text(
             "DATABRICKS_SCHEMA_NAME", "mockaroo_data", "Databricks Schema Name"
         )
@@ -77,9 +77,7 @@ class MockarooConnector:
 
             api_params = {
                 "count": page_size,
-                "key": dbutils.secrets.get(
-                    scope="mockaroo-playground", key="mockaroo-api-key"
-                ),
+                "key": dbutils.secrets.get(scope="roo-bricks", key="mockaroo-api-key"),
             }
 
             self.logger.info(f"📇 Preparing the {catalog_name} catalog...")

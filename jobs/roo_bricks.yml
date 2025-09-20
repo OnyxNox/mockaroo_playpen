@@ -1,7 +1,7 @@
 resources:
     jobs:
-        Mockaroo_Playpen:
-            name: Mockaroo Playpen
+        Roo_Bricks:
+            name: Roo Bricks
             tasks:
                 - task_key: Generate_Healthy_Organizations
                   notebook_task:
@@ -55,7 +55,7 @@ resources:
                 enabled: true
             parameters:
                 - name: CATALOG_NAME
-                  default: "playground"
+                  default: "roo_bricks"
                 - name: DATABRICKS_SCHEMA_NAME
                   default: "mockaroo_data"
                 - name: VOLUME_NAME
