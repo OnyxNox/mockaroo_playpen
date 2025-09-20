@@ -5,6 +5,9 @@
 bundle:
   name: mockaroo_playpen
 
+include:
+  - jobs/*.yml
+
 targets:
   dev:
     mode: development
