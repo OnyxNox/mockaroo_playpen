@@ -51,6 +51,22 @@ resources:
                       base_parameters:
                           MOCKAROO_SCHEMA_NAME: "[H:G] Users_Organizations"
                       source: WORKSPACE
+                - task_key: Generate_Healthy_Organizations_Products
+                  notebook_task:
+                      notebook_path: ../notebooks/extractor.ipynb
+                      base_parameters:
+                          MOCKAROO_SCHEMA_NAME: "[H:G] Organizations_Products"
+                          PAGE_COUNT: "3"
+                          PAGE_SIZE: "1000"
+                      source: WORKSPACE
+                - task_key: Load_Healthy_Organizations_Products
+                  depends_on:
+                      - task_key: Generate_Healthy_Organizations_Products
+                  notebook_task:
+                      notebook_path: ../notebooks/loader.ipynb
+                      base_parameters:
+                          MOCKAROO_SCHEMA_NAME: "[H:G] Organizations_Products"
+                      source: WORKSPACE
             queue:
                 enabled: true
             parameters:

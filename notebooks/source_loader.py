@@ -107,6 +107,9 @@ class SourceLoader:
                     target_type = DoubleType()
                 elif isinstance(casted_value, datetime):
                     target_type = TimestampType()
+                    df = df.withColumn(field.name, to_timestamp(col(field.name)))
+                    cast_columns.append(f"{field.name}: {target_type}")
+                    continue
                 else:
                     continue
 
@@ -131,13 +134,6 @@ class SourceLoader:
         if value.lower() in ("true", "false"):
             return value.lower() == "true"
 
-        # Integer check
-        try:
-            if value.isdigit() or (value.startswith("-") and value[1:].isdigit()):
-                return int(value)
-        except ValueError:
-            pass
-
         # Float check
         try:
             if value.count(".") == 1:
@@ -156,6 +152,13 @@ class SourceLoader:
 
                     if left_valid and right_valid:
                         return float(value)
+        except ValueError:
+            pass
+
+        # Integer check
+        try:
+            if value.isdigit() or (value.startswith("-") and value[1:].isdigit()):
+                return int(value)
         except ValueError:
             pass
 
