@@ -22,6 +22,14 @@ This repository serves as a learning playground for exploring Databricks platfor
     ```shell
     pip install 'databricks-sdk[notebook]'
     ```
+1. Initialize Databricks secrets
+    ```shell
+    # Create new scope for secrets
+    databricks secrets create-scope roo-bricks
+
+    # Add Mockaroo API key to the new scope
+    databricks secrets put-secret roo-bricks mockaroo-api-key
+    ```
 
 ### 🔌 Databricks VSCode Extension
 
