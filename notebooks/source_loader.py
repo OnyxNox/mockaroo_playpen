@@ -81,11 +81,12 @@ class SourceLoader:
             self.logger.error(f"❌ unexpected error: {e}")
 
     def _cast_to_dataframe_types(self, df):
-        last_row = df.tail(1)[0] if df.count() > 0 else None
-
-        if not last_row:
+        if df.count() == 0:
             self.logger.warning("DataFrame is empty, returning original DataFrame")
             return df
+
+        # Get all records
+        all_rows = df.collect()
 
         # Build list of columns to cast
         cast_columns = []
@@ -94,27 +95,54 @@ class SourceLoader:
             if field.dataType != StringType():
                 continue
 
-            field_value = last_row[field.name]
+            # Collect all non-null values for this field from all records
+            field_values = [row[field.name] for row in all_rows if row[field.name] is not None]
 
-            if field_value is not None:
+            if not field_values:
+                continue
+
+            # Cast each value and count the types
+            type_counts = {}
+            for field_value in field_values:
                 casted_value = self._cast_to_python_type(field_value)
 
                 if isinstance(casted_value, bool):
-                    target_type = BooleanType()
+                    type_key = 'bool'
                 elif isinstance(casted_value, int):
-                    target_type = IntegerType()
+                    type_key = 'int'
                 elif isinstance(casted_value, float):
-                    target_type = DoubleType()
+                    type_key = 'float'
                 elif isinstance(casted_value, datetime):
-                    target_type = TimestampType()
-                    df = df.withColumn(field.name, to_timestamp(col(field.name)))
-                    cast_columns.append(f"{field.name}: {target_type}")
-                    continue
+                    type_key = 'datetime'
                 else:
-                    continue
+                    type_key = 'string'
 
+                type_counts[type_key] = type_counts.get(type_key, 0) + 1
+
+            # Find the most common type (excluding string)
+            non_string_types = {k: v for k, v in type_counts.items() if k != 'string'}
+            if not non_string_types:
+                continue
+
+            most_common_type = max(non_string_types, key=non_string_types.get)
+
+            # Apply the cast based on most common type
+            if most_common_type == 'bool':
+                target_type = BooleanType()
                 df = df.withColumn(field.name, col(field.name).cast(target_type))
-                cast_columns.append(f"{field.name}: {target_type}")
+            elif most_common_type == 'int':
+                target_type = IntegerType()
+                df = df.withColumn(field.name, col(field.name).cast(target_type))
+            elif most_common_type == 'float':
+                target_type = DoubleType()
+                df = df.withColumn(field.name, col(field.name).cast(target_type))
+            elif most_common_type == 'datetime':
+                target_type = TimestampType()
+                df = df.withColumn(field.name, to_timestamp(col(field.name)))
+            else:
+                continue
+
+            cast_columns.append(f"{field.name}: {target_type} (from {len(field_values)} samples)")
 
         cast_columns_details = "\n\t".join(cast_columns) if cast_columns else "None"
         self.logger.info(f"🐟 cast columns:\n\t{cast_columns_details}")
