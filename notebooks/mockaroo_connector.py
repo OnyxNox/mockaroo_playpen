@@ -2,10 +2,8 @@ from databricks.sdk.runtime import *
 import json
 import os
 import random
-import re
 import requests
 from utility import (
-    SchemaHealth,
     SchemaType,
     get_mockaroo_schema_name_metadata,
     init_logger,
