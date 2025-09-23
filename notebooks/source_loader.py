@@ -96,7 +96,9 @@ class SourceLoader:
                 continue
 
             # Collect all non-null values for this field from all records
-            field_values = [row[field.name] for row in all_rows if row[field.name] is not None]
+            field_values = [
+                row[field.name] for row in all_rows if row[field.name] is not None
+            ]
 
             if not field_values:
                 continue
@@ -107,42 +109,44 @@ class SourceLoader:
                 casted_value = self._cast_to_python_type(field_value)
 
                 if isinstance(casted_value, bool):
-                    type_key = 'bool'
+                    type_key = "bool"
                 elif isinstance(casted_value, int):
-                    type_key = 'int'
+                    type_key = "int"
                 elif isinstance(casted_value, float):
-                    type_key = 'float'
+                    type_key = "float"
                 elif isinstance(casted_value, datetime):
-                    type_key = 'datetime'
+                    type_key = "datetime"
                 else:
-                    type_key = 'string'
+                    type_key = "string"
 
                 type_counts[type_key] = type_counts.get(type_key, 0) + 1
 
             # Find the most common type (excluding string)
-            non_string_types = {k: v for k, v in type_counts.items() if k != 'string'}
+            non_string_types = {k: v for k, v in type_counts.items() if k != "string"}
             if not non_string_types:
                 continue
 
             most_common_type = max(non_string_types, key=non_string_types.get)
 
             # Apply the cast based on most common type
-            if most_common_type == 'bool':
+            if most_common_type == "bool":
                 target_type = BooleanType()
                 df = df.withColumn(field.name, col(field.name).cast(target_type))
-            elif most_common_type == 'int':
+            elif most_common_type == "int":
                 target_type = IntegerType()
                 df = df.withColumn(field.name, col(field.name).cast(target_type))
-            elif most_common_type == 'float':
+            elif most_common_type == "float":
                 target_type = DoubleType()
                 df = df.withColumn(field.name, col(field.name).cast(target_type))
-            elif most_common_type == 'datetime':
+            elif most_common_type == "datetime":
                 target_type = TimestampType()
                 df = df.withColumn(field.name, to_timestamp(col(field.name)))
             else:
                 continue
 
-            cast_columns.append(f"{field.name}: {target_type} (from {len(field_values)} samples)")
+            cast_columns.append(
+                f"{field.name}: {target_type} (from {len(field_values)} samples)"
+            )
 
         cast_columns_details = "\n\t".join(cast_columns) if cast_columns else "None"
         self.logger.info(f"🐟 cast columns:\n\t{cast_columns_details}")
