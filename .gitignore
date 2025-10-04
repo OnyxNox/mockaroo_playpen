@@ -9,3 +9,12 @@
 
 # Python bytecode cache directory
 __pycache__/
+
+# dbt installed dependencies directory
+dbt_project/dbt_packages/
+
+# dbt logs directory
+dbt_project/logs/
+
+# dbt compiled models and artifacts directory
+dbt_project/target/
