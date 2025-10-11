@@ -1,0 +1,54 @@
+{
+    "num_rows": 37,
+    "file_format": "csv",
+    "line_ending": "unix",
+    "name": "Products",
+    "include_header": true,
+    "columns": [
+        {
+            "name": "id",
+            "type": "Row Number"
+        },
+        {
+            "name": "sku",
+            "type": "Formula",
+            "value": "concat('SKU', random(1000, 9999))"
+        },
+        {
+            "name": "name",
+            "type": "Product Name"
+        },
+        {
+            "name": "description",
+            "type": "Product Description"
+        },
+        {
+            "name": "price",
+            "type": "Product Price"
+        },
+        {
+            "name": "dimensions",
+            "type": "Formula",
+            "value": "concat(random(10, 99), 'x', random(10, 99), 'x', random(10, 99), 'cm')"
+        },
+        {
+            "name": "weight_lbs",
+            "type": "Number",
+            "min": 0.1,
+            "max": 50.0,
+            "decimals": 2
+        },
+        {
+            "name": "quantity_available",
+            "type": "Number",
+            "min": 0,
+            "max": 500,
+            "decimals": 0
+        },
+        {
+            "name": "restock_threshold",
+            "type": "Formula",
+            "value": "quantity_available - random(0, quantity_available)"
+        }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "num_rows": 1000,
+    "file_format": "csv",
+    "line_ending": "unix",
+    "name": "Users",
+    "include_header": true,
+    "columns": [
+        {
+            "name": "id",
+            "type": "Row Number"
+        },
+        {
+            "name": "email",
+            "type": "Email Address"
+        },
+        {
+            "name": "username",
+            "type": "Username"
+        },
+        {
+            "name": "password_hash",
+            "type": "Password"
+        },
+        {
+            "name": "first_name",
+            "type": "First Name"
+        },
+        {
+            "name": "last_name",
+            "type": "Last Name"
+        },
+        {
+            "name": "created_at",
+            "type": "Datetime"
+        },
+        {
+            "name": "modified_at",
+            "null_percentage": 73,
+            "type": "Formula",
+            "value": "created_at + seconds(random(60, 31536000))"
+        }
+    ]
+}

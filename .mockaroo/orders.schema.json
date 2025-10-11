@@ -1,0 +1,47 @@
+{
+    "num_rows": 333,
+    "file_format": "csv",
+    "line_ending": "unix",
+    "name": "Orders",
+    "include_header": true,
+    "columns": [
+        {
+            "name": "id",
+            "type": "Row Number"
+        },
+        {
+            "name": "user_id",
+            "type": "Number",
+            "min": 1,
+            "max": 1000,
+            "decimals": 0
+        },
+        {
+            "name": "order_number",
+            "type": "Formula",
+            "value": "concat('PO-', year(created_at), '-', random(100000, 999999))"
+        },
+        {
+            "name": "tax_amount",
+            "type": "Money",
+            "min": 1.00,
+            "max": 180.00
+        },
+        {
+            "name": "shipping_cost",
+            "type": "Money",
+            "min": 5.00,
+            "max": 50.00
+        },
+        {
+            "name": "created_at",
+            "type": "Datetime"
+        },
+        {
+            "name": "shipped_at",
+            "null_percentage": 33,
+            "type": "Formula",
+            "value": "created_at + seconds(random(86400, 604800))"
+        }
+    ]
+}
