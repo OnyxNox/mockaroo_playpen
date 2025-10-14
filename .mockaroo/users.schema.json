@@ -37,7 +37,7 @@
             "name": "modified_at",
             "null_percentage": 73,
             "type": "Formula",
-            "value": "created_at + seconds(random(60, 31536000))"
+            "value": "created_at + seconds(random(60, 157680000))"
         }
     ]
 }

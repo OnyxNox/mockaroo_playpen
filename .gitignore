@@ -4,8 +4,11 @@
 # Databricks VSCode extension configuration and cache directory
 .databricks/
 
-# Python virtual environment directory
-.env/
+# Roo Bricks default local output directory
+.output/
+
+# uv Python virtual environment directory
+.venv/
 
 # Python bytecode cache directory
 __pycache__/
@@ -18,3 +21,6 @@ dbt_project/logs/
 
 # dbt compiled models and artifacts directory
 dbt_project/target/
+
+# Environment variables file
+.env

@@ -8,19 +8,17 @@ This repository serves as a learning playground for exploring Databricks platfor
     1. Go to User Settings → Access Tokens
     1. Click "Generate New Token"
     1. Set expiration and copy the token
-1. Setup Python virtual environment
+1. Install uv package manager
     ```shell
-    python3.11 -m venv .env
+    curl -LsSf https://astral.sh/uv/install.sh | sh
     ```
-1. Install and authenticate the Databricks CLI
+1. Download dependencies
     ```shell
-    pip install databricks-cli
-
+    uv sync
+    ```
+1. Authenticate the Databricks CLI
+    ```shell
     databricks configure --token
-    ```
-1. Install the Databricks SDK
-    ```shell
-    pip install 'databricks-sdk[notebook]'
     ```
 1. Initialize Databricks secrets
     ```shell
@@ -29,11 +27,4 @@ This repository serves as a learning playground for exploring Databricks platfor
 
     # Add Mockaroo API key to the new scope
     databricks secrets put-secret roo-bricks mockaroo-api-key
-    ```
-
-### 🔌 Databricks VSCode Extension
-
-1. Install `databricks-connect` Python package
-    ```shell
-    pip install databricks-connect
     ```

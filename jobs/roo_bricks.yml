@@ -5,7 +5,7 @@ resources:
             tasks:
                 - task_key: Generate_Healthy_Organizations
                   notebook_task:
-                      notebook_path: ../notebooks/extractor.ipynb
+                      notebook_path: ../notebooks/mockaroo_connector.ipynb
                       base_parameters:
                           MOCKAROO_SCHEMA_NAME: "[H:G] Organizations"
                           PAGE_COUNT: "1"
@@ -15,13 +15,13 @@ resources:
                   depends_on:
                       - task_key: Generate_Healthy_Organizations
                   notebook_task:
-                      notebook_path: ../notebooks/loader.ipynb
+                      notebook_path: ../notebooks/source_loader.ipynb
                       base_parameters:
                           MOCKAROO_SCHEMA_NAME: "[H:G] Organizations"
                       source: WORKSPACE
                 - task_key: Generate_Healthy_Users
                   notebook_task:
-                      notebook_path: ../notebooks/extractor.ipynb
+                      notebook_path: ../notebooks/mockaroo_connector.ipynb
                       base_parameters:
                           MOCKAROO_SCHEMA_NAME: "[H:G] Users"
                           PAGE_COUNT: "2"
@@ -31,13 +31,13 @@ resources:
                   depends_on:
                       - task_key: Generate_Healthy_Users
                   notebook_task:
-                      notebook_path: ../notebooks/loader.ipynb
+                      notebook_path: ../notebooks/source_loader.ipynb
                       base_parameters:
                           MOCKAROO_SCHEMA_NAME: "[H:G] Users"
                       source: WORKSPACE
                 - task_key: Generate_Healthy_Users_Organizations
                   notebook_task:
-                      notebook_path: ../notebooks/extractor.ipynb
+                      notebook_path: ../notebooks/mockaroo_connector.ipynb
                       base_parameters:
                           MOCKAROO_SCHEMA_NAME: "[H:G] Users_Organizations"
                           PAGE_COUNT: "3"
@@ -47,13 +47,13 @@ resources:
                   depends_on:
                       - task_key: Generate_Healthy_Users_Organizations
                   notebook_task:
-                      notebook_path: ../notebooks/loader.ipynb
+                      notebook_path: ../notebooks/source_loader.ipynb
                       base_parameters:
                           MOCKAROO_SCHEMA_NAME: "[H:G] Users_Organizations"
                       source: WORKSPACE
                 - task_key: Generate_Healthy_Organizations_Products
                   notebook_task:
-                      notebook_path: ../notebooks/extractor.ipynb
+                      notebook_path: ../notebooks/mockaroo_connector.ipynb
                       base_parameters:
                           MOCKAROO_SCHEMA_NAME: "[H:G] Organizations_Products"
                           PAGE_COUNT: "3"
@@ -63,7 +63,7 @@ resources:
                   depends_on:
                       - task_key: Generate_Healthy_Organizations_Products
                   notebook_task:
-                      notebook_path: ../notebooks/loader.ipynb
+                      notebook_path: ../notebooks/source_loader.ipynb
                       base_parameters:
                           MOCKAROO_SCHEMA_NAME: "[H:G] Organizations_Products"
                       source: WORKSPACE
