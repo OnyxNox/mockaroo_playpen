@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 import argparse
-from datetime import datetime
 from dotenv import load_dotenv
 import json
-import logging
 import os
+import rbutils
 import requests
 import time
-import uuid
 
 
 class MockarooConnector:
@@ -21,13 +19,9 @@ class MockarooConnector:
 
         args = self._parse_args()
 
-        self._run_id: str = (
-            args.run_id
-            or os.getenv("ROO_BRICKS_RUN_ID")
-            or f"{datetime.now().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8]}"
-        )
+        run_id = rbutils.get_run_id(args.run_id)
 
-        run_output_path = os.path.join(args.output, self._run_id)
+        run_output_path = os.path.join(args.output, run_id)
         os.makedirs(run_output_path, exist_ok=True)
 
         with open(args.mockaroo_schema, "r") as mockaroo_schema_file:
@@ -41,11 +35,11 @@ class MockarooConnector:
         output_filename = f"{mockaroo_schema.get('name', 'mockaroo_data')}.{self._file_format}"
         self._output_filepath = os.path.join(run_output_path, output_filename)
 
-        self._logger = self._init_logger(args.log_level, run_output_path)
+        self._logger = rbutils.init_logger("MockarooConnector", args.log_level, run_output_path)
 
         self._logger.info("\n" + "=" * 120 + "\n")
         self._logger.debug(f"Arguments: {args}")
-        self._logger.info(f"Run ID: {self._run_id}")
+        self._logger.info(f"Run ID: {run_id}")
         self._logger.info(f"Mockaroo Schema File: {args.mockaroo_schema}")
         self._logger.info(f"Schema Column Count: {len(self._schema)}")
         self._logger.info(f"Line Ending: {self._line_ending}")
@@ -78,22 +72,6 @@ class MockarooConnector:
 
         with open(self._output_filepath, "w") as output_file:
             output_file.write(response.text)
-
-    def _init_logger(self, log_level: str, run_output_path: str):
-        """
-        Initialize and configure the logger.
-
-        Returns:
-            logging.Logger: Configured logger instance.
-        """
-        logging.basicConfig(
-            level=getattr(logging, log_level),
-            format="[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s",
-            datefmt="%Y-%m-%dT%H:%M:%SZ",
-            handlers=[logging.FileHandler(os.path.join(run_output_path, "roo_bricks.log")), logging.StreamHandler()],
-        )
-
-        return logging.getLogger("MockarooConnector")
 
     def _parse_args(self):
         """

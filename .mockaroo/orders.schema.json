@@ -2,7 +2,7 @@
     "num_rows": 333,
     "file_format": "csv",
     "line_ending": "unix",
-    "name": "Orders",
+    "name": "orders",
     "include_header": true,
     "columns": [
         {

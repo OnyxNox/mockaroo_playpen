@@ -2,7 +2,7 @@
     "num_rows": 1000,
     "file_format": "csv",
     "line_ending": "unix",
-    "name": "Orders_Products",
+    "name": "orders_products",
     "include_header": true,
     "columns": [
         {

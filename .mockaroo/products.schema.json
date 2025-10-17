@@ -2,7 +2,7 @@
     "num_rows": 37,
     "file_format": "csv",
     "line_ending": "unix",
-    "name": "Products",
+    "name": "products",
     "include_header": true,
     "columns": [
         {

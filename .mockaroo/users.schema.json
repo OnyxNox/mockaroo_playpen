@@ -2,7 +2,7 @@
     "num_rows": 1000,
     "file_format": "csv",
     "line_ending": "unix",
-    "name": "Users",
+    "name": "users",
     "include_header": true,
     "columns": [
         {
