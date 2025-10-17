@@ -23,6 +23,10 @@ def get_run_id(args_run_id) -> str:
     )
 
 
+def is_running_on_databricks():
+    return "DATABRICKS_RUNTIME_VERSION" in os.environ
+
+
 def init_logger(module_name: str, log_level: str, run_output_path: str):
     """
     Initialize and configure the logger with file and console handlers.
@@ -39,7 +43,7 @@ def init_logger(module_name: str, log_level: str, run_output_path: str):
         level=getattr(logging, log_level),
         format="[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s",
         datefmt="%Y-%m-%dT%H:%M:%SZ",
-        handlers=[logging.FileHandler(os.path.join(run_output_path, "roo_bricks.log")), logging.StreamHandler()],
+        # handlers=[logging.FileHandler(os.path.join(run_output_path, "roo_bricks.log")), logging.StreamHandler()],
     )
 
     return logging.getLogger(module_name)

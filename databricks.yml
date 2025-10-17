@@ -3,20 +3,29 @@
 # See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
 
 bundle:
-  name: roo_bricks
+    name: roo_bricks
 
 include:
-  - jobs/*.yml
+    - jobs/*.yml
+
+sync:
+    exclude:
+        - ".vscode"
+        - "typings"
+        - ".env.example"
+        - "pyproject.toml"
+        - "ReadMe.md"
+        - "uv.lock"
 
 targets:
-  dev:
-    mode: development
-    default: true
-    workspace:
-      host: https://dbc-cdb06a49-5008.cloud.databricks.com
+    dev:
+        mode: development
+        default: true
+        workspace:
+            host: https://dbc-cdb06a49-5008.cloud.databricks.com
 
-  ## Optionally, there could be 'staging' or 'prod' targets here.
-  #
-  # prod:
-  #   workspace:
-  #     host: https://dbc-cdb06a49-5008.cloud.databricks.com
+    ## Optionally, there could be 'staging' or 'prod' targets here.
+    #
+    # prod:
+    #   workspace:
+    #     host: https://dbc-cdb06a49-5008.cloud.databricks.com

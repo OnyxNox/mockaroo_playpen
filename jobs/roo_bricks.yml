@@ -1,87 +1,44 @@
 resources:
-    jobs:
-        Roo_Bricks:
-            name: Roo Bricks
-            tasks:
-                - task_key: Generate_Healthy_Organizations
-                  notebook_task:
-                      notebook_path: ../notebooks/mockaroo_connector.ipynb
-                      base_parameters:
-                          MOCKAROO_SCHEMA_NAME: "[H:G] Organizations"
-                          PAGE_COUNT: "1"
-                          PAGE_SIZE: "1000"
-                      source: WORKSPACE
-                - task_key: Load_Healthy_Organizations
-                  depends_on:
-                      - task_key: Generate_Healthy_Organizations
-                  notebook_task:
-                      notebook_path: ../notebooks/source_loader.ipynb
-                      base_parameters:
-                          MOCKAROO_SCHEMA_NAME: "[H:G] Organizations"
-                      source: WORKSPACE
-                - task_key: Generate_Healthy_Users
-                  notebook_task:
-                      notebook_path: ../notebooks/mockaroo_connector.ipynb
-                      base_parameters:
-                          MOCKAROO_SCHEMA_NAME: "[H:G] Users"
-                          PAGE_COUNT: "2"
-                          PAGE_SIZE: "500"
-                      source: WORKSPACE
-                - task_key: Load_Healthy_Users
-                  depends_on:
-                      - task_key: Generate_Healthy_Users
-                  notebook_task:
-                      notebook_path: ../notebooks/source_loader.ipynb
-                      base_parameters:
-                          MOCKAROO_SCHEMA_NAME: "[H:G] Users"
-                      source: WORKSPACE
-                - task_key: Generate_Healthy_Users_Organizations
-                  notebook_task:
-                      notebook_path: ../notebooks/mockaroo_connector.ipynb
-                      base_parameters:
-                          MOCKAROO_SCHEMA_NAME: "[H:G] Users_Organizations"
-                          PAGE_COUNT: "3"
-                          PAGE_SIZE: "1000"
-                      source: WORKSPACE
-                - task_key: Load_Healthy_Users_Organizations
-                  depends_on:
-                      - task_key: Generate_Healthy_Users_Organizations
-                  notebook_task:
-                      notebook_path: ../notebooks/source_loader.ipynb
-                      base_parameters:
-                          MOCKAROO_SCHEMA_NAME: "[H:G] Users_Organizations"
-                      source: WORKSPACE
-                - task_key: Generate_Healthy_Organizations_Products
-                  notebook_task:
-                      notebook_path: ../notebooks/mockaroo_connector.ipynb
-                      base_parameters:
-                          MOCKAROO_SCHEMA_NAME: "[H:G] Organizations_Products"
-                          PAGE_COUNT: "3"
-                          PAGE_SIZE: "1000"
-                      source: WORKSPACE
-                - task_key: Load_Healthy_Organizations_Products
-                  depends_on:
-                      - task_key: Generate_Healthy_Organizations_Products
-                  notebook_task:
-                      notebook_path: ../notebooks/source_loader.ipynb
-                      base_parameters:
-                          MOCKAROO_SCHEMA_NAME: "[H:G] Organizations_Products"
-                      source: WORKSPACE
-            queue:
-                enabled: true
-            parameters:
-                - name: CATALOG_NAME
-                  default: "roo_bricks"
-                - name: DATABRICKS_SCHEMA_NAME
-                  default: "mockaroo_data"
-                - name: VOLUME_NAME
-                  default: "raw_data"
-                - name: RANDOM_FINAL_PAGE_SIZE
-                  default: "true"
-            environments:
-                - environment_key: dbt-default
-                  spec:
-                      client: "3"
-                      dependencies:
-                          - dbt-databricks>=1.0.0,<2.0.0
-            performance_target: PERFORMANCE_OPTIMIZED
+  jobs:
+    roo_bricks:
+      name: Roo Bricks
+      tasks:
+        - task_key: ForEach_Entity
+          for_each_task:
+            inputs: '["orders_products", "orders", "products", "users"]'
+            task:
+              task_key: Download_Entity
+              spark_python_task:
+                python_file: ../src/mockaroo_connector.py
+                parameters:
+                  - --output
+                  - /Workspace/.output
+                  - --run-id
+                  - "{{job.run_id}}"
+                  - "../.mockaroo/{{input}}.schema.json"
+              environment_key: Default
+        - task_key: ForEach_Downloaded_Entity
+          depends_on:
+            - task_key: ForEach_Entity
+          for_each_task:
+            inputs: '["orders_products", "orders", "products", "users"]'
+            task:
+              task_key: Ingest_Entity
+              spark_python_task:
+                python_file: ../src/data_loader.py
+                parameters:
+                  - --input
+                  - /Workspace/.output
+                  - --run-id
+                  - "{{job.run_id}}"
+                  - "{{input}}"
+              environment_key: Default
+      queue:
+        enabled: true
+      environments:
+        - environment_key: Default
+          spec:
+            client: "4"
+            dependencies:
+              - python-dotenv==1.1.1
+      performance_target: PERFORMANCE_OPTIMIZED

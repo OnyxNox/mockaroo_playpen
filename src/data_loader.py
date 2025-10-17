@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-from dotenv import load_dotenv
-import duckdb
 import os
 import re
 import rbutils
@@ -12,7 +10,10 @@ class DataLoader:
         """
         Initialize the DataLoader and prepare the environment for data loading operations.
         """
-        load_dotenv()
+        if not rbutils.is_running_on_databricks():
+            from dotenv import load_dotenv
+
+            load_dotenv()
 
         args = self._parse_args()
 
@@ -38,6 +39,8 @@ class DataLoader:
         self._entity_name = os.path.splitext(os.path.basename(entity_files[0]))[0]
         self._entity_path = entity_files[0]
         self._db_path = os.path.join(run_input_path, "roo_bricks.db")
+        self._catalog = args.catalog
+        self._database_name = args.database_name
 
         self._logger = rbutils.init_logger("DataLoader", args.log_level, run_input_path)
 
@@ -54,25 +57,54 @@ class DataLoader:
             )
 
     def load(self):
-        conn = duckdb.connect(self._db_path)
-
         entity_file_ext = os.path.splitext(self._entity_path)[1].lower()
 
-        if entity_file_ext == ".csv":
-            conn.execute(
-                f"CREATE OR REPLACE TABLE {self._entity_name} AS SELECT * FROM read_csv_auto('{self._entity_path}');"
-            )
-        elif entity_file_ext == ".json":
-            conn.execute(
-                f"CREATE OR REPLACE TABLE {self._entity_name} AS SELECT * FROM read_json_auto('{self._entity_path}');"
-            )
+        if rbutils.is_running_on_databricks():
+            full_table_name = f"{self._catalog}.{self._database_name}.{self._entity_name}"
+
+            spark.sql(f"CREATE CATALOG IF NOT EXISTS {self._catalog}")
+            spark.sql(f"CREATE SCHEMA IF NOT EXISTS {self._catalog}.{self._database_name}")
+            spark.sql(f"CREATE VOLUME IF NOT EXISTS {self._catalog}.{self._database_name}.raw")
+
+            volume_path = f"/Volumes/{self._catalog}/{self._database_name}/raw/{os.path.basename(self._entity_path)}"
+
+            with open(self._entity_path, "r") as source_file:
+                with open(volume_path, "w") as dest_file:
+                    dest_file.write(source_file.read())
+
+            self._logger.info(f"Copied file to volume: {volume_path}")
+
+            if entity_file_ext == ".csv":
+                df = spark.read.option("header", "true").option("inferSchema", "true").csv(volume_path)
+            elif entity_file_ext == ".json":
+                df = spark.read.option("multiLine", "true").json(volume_path)
+            else:
+                raise ValueError(f"Unsupported file format: {entity_file_ext}")
+
+            df.write.mode("overwrite").saveAsTable(full_table_name)
+
+            row_count = df.count()
+            self._logger.info(f"Created '{full_table_name}' table with {row_count} rows")
         else:
-            raise ValueError(f"Unsupported file format: {entity_file_ext}")
+            import duckdb
 
-        row_count = conn.execute(f"SELECT COUNT(*) FROM {self._entity_name};").fetchone()[0]
-        self._logger.info(f"Created '{self._entity_name}' table with {row_count} rows")
+            conn = duckdb.connect(self._db_path)
 
-        conn.close()
+            if entity_file_ext == ".csv":
+                conn.execute(
+                    f"CREATE OR REPLACE TABLE {self._entity_name} AS SELECT * FROM read_csv_auto('{self._entity_path}');"
+                )
+            elif entity_file_ext == ".json":
+                conn.execute(
+                    f"CREATE OR REPLACE TABLE {self._entity_name} AS SELECT * FROM read_json_auto('{self._entity_path}');"
+                )
+            else:
+                raise ValueError(f"Unsupported file format: {entity_file_ext}")
+
+            row_count = conn.execute(f"SELECT COUNT(*) FROM {self._entity_name};").fetchone()[0]
+            self._logger.info(f"Created '{self._entity_name}' table with {row_count} rows")
+
+            conn.close()
 
     def _parse_args(self):
         """
@@ -83,6 +115,10 @@ class DataLoader:
         """
         parser = argparse.ArgumentParser(description="", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
+        parser.add_argument(
+            "-c", "--catalog", default="default", help="Databricks catalog name (only used when running on Databricks)"
+        )
+        parser.add_argument("-d", "--database-name", default="roo_bricks", help="Databricks database/schema name")
         parser.add_argument(
             "--log-level",
             type=str.upper,
