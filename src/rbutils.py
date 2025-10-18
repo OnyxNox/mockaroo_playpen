@@ -119,11 +119,17 @@ def init_logger(module_name: str, log_level: str, run_output_path: str):
     Returns:
         logging.Logger: Configured logger instance.
     """
+    handlers = [logging.StreamHandler()]
+
+    if not is_running_on_databricks():
+        os.makedirs(run_output_path, exist_ok=True)
+        handlers.append(logging.FileHandler(os.path.join(run_output_path, "roo_bricks.log")))
+
     logging.basicConfig(
         level=getattr(logging, log_level),
         format="[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s",
         datefmt="%Y-%m-%dT%H:%M:%SZ",
-        # handlers=[logging.FileHandler(os.path.join(run_output_path, "roo_bricks.log")), logging.StreamHandler()],
+        handlers=handlers,
     )
 
     return logging.getLogger(module_name)
