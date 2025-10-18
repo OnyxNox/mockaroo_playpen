@@ -1,10 +1,94 @@
 #!/usr/bin/env python3
+from abc import ABC, abstractmethod
 from datetime import datetime
 import logging
 import os
 import uuid
 
 
+# ===== Platform Detection =====
+def is_running_on_databricks():
+    return "DATABRICKS_RUNTIME_VERSION" in os.environ
+
+
+# ===== Secrets Abstraction =====
+class SecretsManager(ABC):
+    """Abstract base class for secrets management"""
+
+    @abstractmethod
+    def get(self, scope: str, key: str) -> str:
+        """Get a secret value"""
+        pass
+
+
+class LocalSecretsManager(SecretsManager):
+    """Local implementation using environment variables"""
+
+    def get(self, scope: str, key: str) -> str:
+        # Convert scope-key to environment variable name format
+        # e.g., "roo-bricks" + "mockaroo-api-key" -> "ROO_BRICKS_MOCKAROO_API_KEY"
+        env_var_name = f"{scope}_{key}".upper().replace("-", "_")
+        value = os.getenv(env_var_name)
+
+        if value is None:
+            raise ValueError(f"Secret not found in environment variables: {env_var_name}")
+
+        return value
+
+
+class DatabricksSecretsManager(SecretsManager):
+    """Databricks implementation using dbutils.secrets"""
+
+    def get(self, scope: str, key: str) -> str:
+        # Access dbutils.secrets from global scope (injected by Databricks runtime)
+        return dbutils.secrets.get(scope=scope, key=key)
+
+
+# ===== Lazy Initialization =====
+_secrets_manager = None
+
+
+def _get_secrets_manager() -> SecretsManager:
+    """Lazy initialization of the appropriate secrets manager"""
+    global _secrets_manager
+
+    if _secrets_manager is None:
+        if is_running_on_databricks():
+            _secrets_manager = DatabricksSecretsManager()
+        else:
+            _secrets_manager = LocalSecretsManager()
+
+    return _secrets_manager
+
+
+# ===== Public API =====
+class secrets:
+    """Unified secrets interface that works on both platforms"""
+
+    @staticmethod
+    def get(scope: str, key: str) -> str:
+        """
+        Get a secret value.
+
+        On Databricks: Uses dbutils.secrets.get(scope, key)
+        On Local: Uses environment variable {SCOPE}_{KEY}
+
+        Args:
+            scope: Secret scope (e.g., 'roo-bricks')
+            key: Secret key (e.g., 'mockaroo-api-key')
+
+        Returns:
+            str: The secret value
+
+        Example:
+            api_key = rbutils.secrets.get('roo-bricks', 'mockaroo-api-key')
+            # On Databricks: calls dbutils.secrets.get('roo-bricks', 'mockaroo-api-key')
+            # On Local: reads os.getenv('ROO_BRICKS_MOCKAROO_API_KEY')
+        """
+        return _get_secrets_manager().get(scope, key)
+
+
+# ===== Existing Utility Functions =====
 def get_run_id(args_run_id) -> str:
     """
     Get or generate a unique run identifier.
@@ -21,10 +105,6 @@ def get_run_id(args_run_id) -> str:
         or os.getenv("ROO_BRICKS_RUN_ID")
         or f"{datetime.now().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8]}"
     )
-
-
-def is_running_on_databricks():
-    return "DATABRICKS_RUNTIME_VERSION" in os.environ
 
 
 def init_logger(module_name: str, log_level: str, run_output_path: str):

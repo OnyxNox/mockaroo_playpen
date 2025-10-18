@@ -55,18 +55,8 @@ class MockarooConnector:
         generate_url = f"https://api.mockaroo.com/api/generate.{self._file_format}"
         generate_url += f"?count={self._count}&line_ending={self._line_ending}"
 
-        if rbutils.is_running_on_databricks():
-            mockaroo_api_key = dbutils.secrets.get(scope="roo-bricks", key="mockaroo-api-key")
-            if not mockaroo_api_key:
-                raise ValueError("MOCKAROO_API_KEY not found in Databricks secrets")
-
-            self._logger.info("Using Mockaroo API key from Databricks secrets")
-        else:
-            mockaroo_api_key = os.getenv("MOCKAROO_API_KEY")
-            if not mockaroo_api_key:
-                raise ValueError("MOCKAROO_API_KEY not found in environment variables or .env file")
-
-            self._logger.info("Using Mockaroo API key from environment variables")
+        # Get API key using platform-agnostic abstraction
+        mockaroo_api_key = rbutils.secrets.get("roo-bricks", "mockaroo-api-key")
 
         headers = {"Content-Type": "application/json", "X-API-Key": mockaroo_api_key}
 
