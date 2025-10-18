@@ -15,7 +15,7 @@ resources:
                   - /Workspace/.output
                   - --run-id
                   - "{{job.run_id}}"
-                  - "../.mockaroo/{{input}}.schema.json"
+                  - "../.data/lorem_ipsum_inc/{{input}}.schema.json"
               environment_key: Default
         - task_key: ForEach_Downloaded_Entity
           depends_on:
@@ -39,6 +39,4 @@ resources:
         - environment_key: Default
           spec:
             client: "4"
-            dependencies:
-              - python-dotenv==1.1.1
       performance_target: PERFORMANCE_OPTIMIZED

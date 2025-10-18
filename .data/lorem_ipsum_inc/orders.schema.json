@@ -22,10 +22,10 @@
             "value": "concat('PO-', year(created_at), '-', random(100000, 999999))"
         },
         {
-            "name": "tax_amount",
-            "type": "Money",
-            "min": 1.00,
-            "max": 180.00
+            "name": "tax_rate",
+            "type": "Number",
+            "min": 0,
+            "max": 1
         },
         {
             "name": "shipping_cost",
