@@ -17,11 +17,6 @@
             "decimals": 0
         },
         {
-            "name": "order_number",
-            "type": "Formula",
-            "value": "concat('PO-', year(created_at), '-', random(100000, 999999))"
-        },
-        {
             "name": "tax_rate",
             "type": "Number",
             "min": 0,
@@ -42,6 +37,11 @@
             "null_percentage": 33,
             "type": "Formula",
             "value": "created_at + seconds(random(86400, 604800))"
+        },
+        {
+            "name": "order_number",
+            "type": "Formula",
+            "value": "concat('PO-', year(created_at), '-', random(100000, 999999))"
         }
     ]
 }
