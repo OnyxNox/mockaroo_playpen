@@ -21,3 +21,7 @@ Roo Data is a tool used to build fake datasets using the Mockaroo API.
     ```shell
     uv run src/mockaroo_connector.py .data/lorem_ipsum_inc/users.schema.json
     ```
+1. **(EXAMPLE)** Generate and download fake data for all Lorem Ipsum Inc. schemas
+    ```shell
+    uv run src/mockaroo_connector.py .data/lorem_ipsum_inc/
+    ```
