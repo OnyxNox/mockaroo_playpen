@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 import argparse
+from datetime import datetime
+from dotenv import load_dotenv
 import json
+import logging
 import os
-import rbutils
 import requests
 import time
-from dotenv import load_dotenv
+import uuid
 
 
 class MockarooConnector:
@@ -19,7 +21,11 @@ class MockarooConnector:
 
         args = self._parse_args()
 
-        run_id = rbutils.get_run_id(args.run_id)
+        run_id = (
+            args.run_id
+            or os.getenv("ROO_DATA_RUN_ID")
+            or f"{datetime.now().strftime('%Y%m%d-%H%M%S')}-{str(uuid.uuid4())[:8]}"
+        )
 
         run_output_path = os.path.join(args.output, run_id)
         os.makedirs(run_output_path, exist_ok=True)
@@ -35,7 +41,14 @@ class MockarooConnector:
         output_filename = f"{mockaroo_schema.get('name', 'mockaroo_data')}.{self._file_format}"
         self._output_filepath = os.path.join(run_output_path, output_filename)
 
-        self._logger = rbutils.init_logger("MockarooConnector", args.log_level, run_output_path)
+        logging.basicConfig(
+            level=getattr(logging, log_level),
+            format="[%(asctime)s] [%(levelname)s] %(message)s",
+            datefmt="%Y-%m-%dT%H:%M:%SZ",
+            handlers=[logging.StreamHandler(), logging.FileHandler(os.path.join(run_output_path, "roo_data.log"))],
+        )
+
+        self._logger = logging.getLogger(__name__)
 
         self._logger.info("\n" + "=" * 120 + "\n")
         self._logger.debug(f"Arguments: {args}")
@@ -53,8 +66,9 @@ class MockarooConnector:
         generate_url = f"https://api.mockaroo.com/api/generate.{self._file_format}"
         generate_url += f"?count={self._count}&line_ending={self._line_ending}"
 
-        # Get API key using platform-agnostic abstraction
-        mockaroo_api_key = rbutils.secrets.get("roo-bricks", "mockaroo-api-key")
+        mockaroo_api_key = os.getenv("MOCKAROO_API_KEY")
+        if not mockaroo_api_key:
+            raise ValueError("MOCKAROO_API_KEY environment variable not set")
 
         headers = {"Content-Type": "application/json", "X-API-Key": mockaroo_api_key}
 

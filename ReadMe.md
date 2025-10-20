@@ -1,18 +1,14 @@
-# 🦘 Roo Bricks 🧱
+# 🦘 Roo Data 📊
 
-This repository serves as a learning playground for local data processing and analytics using Mockaroo as a data source.
+Roo Data is a tool used to build fake datasets using the Mockaroo API.
 
-## 🔨 Development Setup (Linux)
+## 🔨 Setup (Linux)
 
 1. Install uv package manager
     ```shell
     curl -LsSf https://astral.sh/uv/install.sh | sh
     ```
-1. Download Roo Bricks project dependencies
+1. Download project dependencies
     ```shell
     uv sync
-    ```
-1. Install DuckDB for local development
-    ```shell
-    curl https://install.duckdb.org | sh
     ```

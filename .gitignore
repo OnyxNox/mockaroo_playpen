@@ -1,7 +1,7 @@
 # Miscellaneous ignore rule
 *.ignore*
 
-# Roo Bricks default local output directory
+# Roo Data default local output directory
 .output/
 
 # uv Python virtual environment directory
@@ -9,15 +9,6 @@
 
 # Python bytecode cache directory
 __pycache__/
-
-# dbt installed dependencies directory
-dbt_project/dbt_packages/
-
-# dbt logs directory
-dbt_project/logs/
-
-# dbt compiled models and artifacts directory
-dbt_project/target/
 
 # Environment variables file
 .env
