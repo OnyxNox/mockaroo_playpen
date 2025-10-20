@@ -1,0 +1,374 @@
+{
+    "name": "School Data Sync v2.1",
+    "tables": [
+        {
+            "name": "orgs",
+            "columns": [
+                {
+                    "name": "sourcedId",
+                    "data_type": "guid"
+                },
+                {
+                    "name": "name",
+                    "data_type": "string"
+                },
+                {
+                    "name": "type",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "school, department, district, local, state, national, departmentOfEducation, ministryOfEducation, university, college, campus, adultEducation, municipality, academicTrust, localAuthority, region, division, province, researchCenter, program"
+                    }
+                },
+                {
+                    "name": "parentSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "orgs",
+                        "column_name": "sourcedId"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "users",
+            "columns": [
+                {
+                    "name": "sourcedId",
+                    "data_type": "guid"
+                },
+                {
+                    "name": "username",
+                    "data_type": "string"
+                },
+                {
+                    "name": "familyName",
+                    "data_type": "string"
+                },
+                {
+                    "name": "givenName",
+                    "data_type": "string"
+                },
+                {
+                    "name": "activeDirectoryMatchId",
+                    "data_type": "string"
+                },
+                {
+                    "name": "email",
+                    "data_type": "string"
+                },
+                {
+                    "name": "phone",
+                    "data_type": "string"
+                },
+                {
+                    "name": "sms",
+                    "data_type": "string"
+                },
+                {
+                    "name": "userNumber",
+                    "data_type": "string"
+                }
+            ]
+        },
+        {
+            "name": "roles",
+            "columns": [
+                {
+                    "name": "userSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "users",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "orgSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "orgs",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "role",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "principal, chair, professor, researcher, adjunct, affiliate, occupationalTherapist, physicalTherapist, speechTherapist, visionTherapist, paraprofessional, specialServices, advisor, proctor, nurse, officeStaff, lecturer, itAdmin, administrator, teacher, faculty, staff, teacherAssistant, assistant, instructor, substitute, coach, alumni, student, other"
+                    }
+                },
+                {
+                    "name": "sessionSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "academicSessions",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "grade",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "it, pr, pk, tk, kg, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, ps, ug, other, ps1, ps2, ps3, ps4, undergraduate, graduate, postgraduate alumni, adultEducation"
+                    }
+                },
+                {
+                    "name": "isPrimary",
+                    "data_type": "boolean"
+                },
+                {
+                    "name": "roleStartDate",
+                    "data_type": "date_time"
+                },
+                {
+                    "name": "roleEndDate",
+                    "data_type": "date_time"
+                }
+            ]
+        },
+        {
+            "name": "classes",
+            "columns": [
+                {
+                    "name": "sourcedId",
+                    "data_type": "guid"
+                },
+                {
+                    "name": "orgSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "orgs",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "title",
+                    "data_type": "string"
+                },
+                {
+                    "name": "sessionSourcedIds",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "academicSessions",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "courseSourcedId",
+                    "data_type": "guid"
+                },
+                {
+                    "name": "code",
+                    "data_type": "string"
+                }
+            ]
+        },
+        {
+            "name": "enrollments",
+            "columns": [
+                {
+                    "name": "classSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "classes",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "userSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "users",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "role",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "student, visionTherapist, substitute, aid, paraprofessional, principal, proctor, teacherAssistant, specialServices, teacher, professor, advisor, administrator, lecturer, coach, occupationalTherapist, affiliate, assistant, physicalTherapist, adjunct, staff, speechTherapist, instructor, alumni, chair, itAdmin, officeStaff"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "academicSessions",
+            "columns": [
+                {
+                    "name": "sourcedId",
+                    "data_type": "guid"
+                },
+                {
+                    "name": "title",
+                    "data_type": "string"
+                },
+                {
+                    "name": "type",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "schoolYear, semester, term, gradingPeriod, quarter"
+                    }
+                },
+                {
+                    "name": "schoolYear",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "2022, 2026, 2030, 2023, 2027, 2031, 2024, 2028, 2025, 2029"
+                    }
+                },
+                {
+                    "name": "startDate",
+                    "data_type": "date_time"
+                },
+                {
+                    "name": "endDate",
+                    "data_type": "date_time"
+                }
+            ]
+        },
+        {
+            "name": "courses",
+            "columns": [
+                {
+                    "name": "sourcedId",
+                    "data_type": "guid"
+                },
+                {
+                    "name": "orgSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "orgs",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "title",
+                    "data_type": "string"
+                },
+                {
+                    "name": "code",
+                    "data_type": "string"
+                },
+                {
+                    "name": "schoolYearSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "academicSessions",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "subject",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "01, 02, 03, 04, 05, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24"
+                    }
+                },
+                {
+                    "name": "grade",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "it, pr, pk, tk, kg, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, ps, ug, other, ps1, ps2, ps3, ps4, undergraduate, graduate, postgraduate alumni, adultEducation"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "relationships",
+            "columns": [
+                {
+                    "name": "userSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "users",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "relationshipUserSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "users",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "relationshipRole",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "parent, guardian, relative, other, doctor, aide"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "demographics",
+            "columns": [
+                {
+                    "name": "userSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "users",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "sex",
+                    "data_type": "male, female, notSelected"
+                },
+                {
+                    "name": "birthDate",
+                    "data_type": "date_time"
+                },
+                {
+                    "name": "birthCity",
+                    "data_type": "string"
+                },
+                {
+                    "name": "birthState",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "AK, LA, OR, AL, MA, PA, AR, MD, PR, AS, ME, PW, AZ, MH, RI, CA, MI, SC, CO, MN, SD, CT, MO, TN, DC, MP, TX, DE, MS, UT, FL, MT, VA, FM, NC, VI, GA, ND, VT, GU, NE, WA, HI, NH, WI, IA, NJ, WV, IL, NV, AA, IN, NY, AE, KS, OH, AP, KY, OK"
+                    }
+                },
+                {
+                    "name": "birthCountry",
+                    "data_type": "string"
+                },
+                {
+                    "name": "ethnicityCodes",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "hispanicOrLatinoEthnicity"
+                    }
+                },
+                {
+                    "name": "raceCodes",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "americanIndianOrAlaskaNative, nativeHawaiianOrOtherPacificIslander, blackOrAfricanAmerican, demographicRaceTwoOrMoreRaces, asian, white"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "userFlags",
+            "columns": [
+                {
+                    "name": "userSourcedId",
+                    "data_type": "reference",
+                    "parameters": {
+                        "table_name": "users",
+                        "column_name": "sourcedId"
+                    }
+                },
+                {
+                    "name": "flag",
+                    "data_type": "enumerator",
+                    "parameters": {
+                        "values": "freeLunch, reducedLunch, homeless, giftOrTalented, 504, ell, lep, iep"
+                    }
+                }
+            ]
+        }
+    ]
+}

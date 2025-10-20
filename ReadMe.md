@@ -25,3 +25,11 @@ Roo Data is a tool used to build fake datasets using the Mockaroo API.
     ```shell
     uv run src/mockaroo_connector.py .data/lorem_ipsum_inc/
     ```
+
+## ⚙️ Generate Mockaroo Schema
+
+1. Create or obtain a data dictionary that describes your target dataset structure. See [school_data_sync_v2.1.schema.json](./.data/school_data_sync_v2.1.schema.json) for an example format, but note the schema format is flexible and not strictly enforced
+1. Use Claude Code to generate Mockaroo-compatible schemas from your data dictionary:
+    ```md
+    @mockaroo-schema-generator @.data/school_data_sync_v2.1.schema.json
+    ```
