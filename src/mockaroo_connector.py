@@ -13,9 +13,7 @@ import uuid
 class MockarooConnector:
     def __init__(self):
         """
-        Initialize the MockarooConnector.
-
-        Sets up the connector by loading configuration, preparing the execution environment, and initializing logging.
+        Initialize the MockarooConnector with configuration and runtime settings.
         """
         load_dotenv()
 
@@ -42,7 +40,7 @@ class MockarooConnector:
         self._output_filepath = os.path.join(run_output_path, output_filename)
 
         logging.basicConfig(
-            level=getattr(logging, log_level),
+            level=getattr(logging, args.log_level),
             format="[%(asctime)s] [%(levelname)s] %(message)s",
             datefmt="%Y-%m-%dT%H:%M:%SZ",
             handlers=[logging.StreamHandler(), logging.FileHandler(os.path.join(run_output_path, "roo_data.log"))],
@@ -61,7 +59,7 @@ class MockarooConnector:
 
     def download(self):
         """
-        Generate and download mock data from Mockaroo API.
+        Retrieve mock data from the Mockaroo service and save to the configured output location.
         """
         generate_url = f"https://api.mockaroo.com/api/generate.{self._file_format}"
         generate_url += f"?count={self._count}&line_ending={self._line_ending}"
@@ -88,10 +86,10 @@ class MockarooConnector:
 
     def _parse_args(self):
         """
-        Parse and return command-line arguments.
+        Process command-line interface inputs for the connector.
 
         Returns:
-            argparse.Namespace: Parsed arguments.
+            argparse.Namespace: Parsed command-line arguments.
         """
         parser = argparse.ArgumentParser(
             description="Download data from Mockaroo API", formatter_class=argparse.ArgumentDefaultsHelpFormatter
