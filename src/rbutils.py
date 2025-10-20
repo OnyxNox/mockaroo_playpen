@@ -6,11 +6,6 @@ import os
 import uuid
 
 
-# ===== Platform Detection =====
-def is_running_on_databricks():
-    return "DATABRICKS_RUNTIME_VERSION" in os.environ
-
-
 # ===== Secrets Abstraction =====
 class SecretsManager(ABC):
     """Abstract base class for secrets management"""
@@ -36,42 +31,30 @@ class LocalSecretsManager(SecretsManager):
         return value
 
 
-class DatabricksSecretsManager(SecretsManager):
-    """Databricks implementation using dbutils.secrets"""
-
-    def get(self, scope: str, key: str) -> str:
-        # Access dbutils.secrets from global scope (injected by Databricks runtime)
-        return dbutils.secrets.get(scope=scope, key=key)
-
-
 # ===== Lazy Initialization =====
 _secrets_manager = None
 
 
 def _get_secrets_manager() -> SecretsManager:
-    """Lazy initialization of the appropriate secrets manager"""
+    """Lazy initialization of the secrets manager"""
     global _secrets_manager
 
     if _secrets_manager is None:
-        if is_running_on_databricks():
-            _secrets_manager = DatabricksSecretsManager()
-        else:
-            _secrets_manager = LocalSecretsManager()
+        _secrets_manager = LocalSecretsManager()
 
     return _secrets_manager
 
 
 # ===== Public API =====
 class secrets:
-    """Unified secrets interface that works on both platforms"""
+    """Secrets interface using environment variables"""
 
     @staticmethod
     def get(scope: str, key: str) -> str:
         """
-        Get a secret value.
+        Get a secret value from environment variables.
 
-        On Databricks: Uses dbutils.secrets.get(scope, key)
-        On Local: Uses environment variable {SCOPE}_{KEY}
+        The secret is read from environment variable {SCOPE}_{KEY} (uppercase, hyphens replaced with underscores).
 
         Args:
             scope: Secret scope (e.g., 'roo-bricks')
@@ -82,8 +65,7 @@ class secrets:
 
         Example:
             api_key = rbutils.secrets.get('roo-bricks', 'mockaroo-api-key')
-            # On Databricks: calls dbutils.secrets.get('roo-bricks', 'mockaroo-api-key')
-            # On Local: reads os.getenv('ROO_BRICKS_MOCKAROO_API_KEY')
+            # Reads os.getenv('ROO_BRICKS_MOCKAROO_API_KEY')
         """
         return _get_secrets_manager().get(scope, key)
 
@@ -119,11 +101,12 @@ def init_logger(module_name: str, log_level: str, run_output_path: str):
     Returns:
         logging.Logger: Configured logger instance.
     """
-    handlers = [logging.StreamHandler()]
+    os.makedirs(run_output_path, exist_ok=True)
 
-    if not is_running_on_databricks():
-        os.makedirs(run_output_path, exist_ok=True)
-        handlers.append(logging.FileHandler(os.path.join(run_output_path, "roo_bricks.log")))
+    handlers = [
+        logging.StreamHandler(),
+        logging.FileHandler(os.path.join(run_output_path, "roo_bricks.log"))
+    ]
 
     logging.basicConfig(
         level=getattr(logging, log_level),

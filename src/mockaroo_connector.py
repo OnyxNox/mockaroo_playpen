@@ -5,6 +5,7 @@ import os
 import rbutils
 import requests
 import time
+from dotenv import load_dotenv
 
 
 class MockarooConnector:
@@ -14,10 +15,7 @@ class MockarooConnector:
 
         Sets up the connector by loading configuration, preparing the execution environment, and initializing logging.
         """
-        if not rbutils.is_running_on_databricks():
-            from dotenv import load_dotenv
-
-            load_dotenv()
+        load_dotenv()
 
         args = self._parse_args()
 

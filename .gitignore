@@ -1,9 +1,6 @@
 # Miscellaneous ignore rule
 *.ignore*
 
-# Databricks VSCode extension configuration and cache directory
-.databricks/
-
 # Roo Bricks default local output directory
 .output/
 

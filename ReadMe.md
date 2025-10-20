@@ -1,6 +1,6 @@
 # 🦘 Roo Bricks 🧱
 
-This repository serves as a learning playground for exploring Databricks platform capabilities and features using Mockaroo as a data source.
+This repository serves as a learning playground for local data processing and analytics using Mockaroo as a data source.
 
 ## 🔨 Development Setup (Linux)
 
@@ -15,23 +15,4 @@ This repository serves as a learning playground for exploring Databricks platfor
 1. Install DuckDB for local development
     ```shell
     curl https://install.duckdb.org | sh
-    ```
-
-# 🧱 Databricks Setup
-
-1. Generate token in Databricks UI
-    1. Go to User Settings → Access Tokens
-    1. Click "Generate New Token"
-    1. Set expiration and copy the token
-1. Authenticate the Databricks CLI
-    ```shell
-    databricks configure --token
-    ```
-1. Initialize Databricks secrets
-    ```shell
-    # Create new scope for secrets
-    databricks secrets create-scope roo-bricks
-
-    # Add Mockaroo API key to the new scope
-    databricks secrets put-secret roo-bricks mockaroo-api-key
     ```
